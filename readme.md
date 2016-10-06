@@ -33,7 +33,13 @@ The complete Katana documentation can be found here: http://themsaid.github.io/k
 ## Blog generator
 
 Katana is shipped with a static blog generator, all you need to do is create a new `.blade.php` file in the `/content/_blog` directory and Katana
-will compile all the posts and present them in a view of your choice.
+will compile all the posts and present them in a view of your choice or you can run in terminal for create the file automatically.
+
+```
+php katana post "Title of the post"
+```
+
+If you prefer create a Markdown file, add `--m` in the end of the command.
 
 Blog posts list is paginated based on the configuration options in `config.php`. There's also a `$blogPosts` variable available in all your blade
 views that contains an array of posts.
