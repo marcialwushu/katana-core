@@ -7,9 +7,9 @@ use Illuminate\View\Factory;
 
 class RSSFeedBuilder
 {
-    private $filesystem;
-    private $viewFactory;
-    private $viewsData;
+    protected $filesystem;
+    protected $viewFactory;
+    protected $viewsData;
 
     /**
      * RSSFeedBuilder constructor.
@@ -50,7 +50,7 @@ class RSSFeedBuilder
      * @return mixed
      * @throws \Exception
      */
-    private function getRSSView()
+    protected function getRSSView()
     {
         if (! isset($this->viewsData['rssFeedView']) || ! @$this->viewsData['rssFeedView']) {
             return null;

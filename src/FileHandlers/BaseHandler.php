@@ -91,7 +91,7 @@ class BaseHandler
      *
      * @return string
      */
-    private function getFileContent()
+    protected function getFileContent()
     {
         if (ends_with($this->file->getFilename(), '.blade.php')) {
             return $this->renderBlade();
@@ -129,7 +129,7 @@ class BaseHandler
      *
      * @return string
      */
-    private function prepareAndGetDirectory()
+    protected function prepareAndGetDirectory()
     {
         if (! $this->filesystem->isDirectory($this->directory)) {
             $this->filesystem->makeDirectory($this->directory, 0755, true);
@@ -161,7 +161,7 @@ class BaseHandler
      *
      * @return string
      */
-    private function getViewPath()
+    protected function getViewPath()
     {
         return str_replace(['.blade.php', '.md'], '', $this->file->getRelativePathname());
     }
@@ -173,7 +173,7 @@ class BaseHandler
      *
      * @return void
      */
-    private function prepareBlogIndexViewData()
+    protected function prepareBlogIndexViewData()
     {
         $postsPerPage = @$this->viewsData['postsPerPage'] ?: 5;
 
@@ -201,7 +201,7 @@ class BaseHandler
      *
      * @return void
      */
-    private function appendViewInformationToData()
+    protected function appendViewInformationToData()
     {
         $this->viewsData['currentViewPath'] = $this->viewPath;
 

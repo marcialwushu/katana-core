@@ -52,7 +52,7 @@ class Markdown
      *
      * @return string
      */
-    private static function cleanLeadingSpace($text)
+    protected static function cleanLeadingSpace($text)
     {
         $i = 0;
 

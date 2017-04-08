@@ -7,10 +7,10 @@ use Illuminate\View\Factory;
 
 class BlogPaginationBuilder
 {
-    private $filesystem;
-    private $viewFactory;
-    private $viewsData;
-    private $pagesData;
+    protected $filesystem;
+    protected $viewFactory;
+    protected $viewsData;
+    protected $pagesData;
 
     /**
      * BlogPaginationBuilder constructor.
@@ -50,7 +50,7 @@ class BlogPaginationBuilder
      * @return mixed
      * @throws \Exception
      */
-    private function getPostsListView()
+    protected function getPostsListView()
     {
         if (! isset($this->viewsData['postsListView'])) {
             throw new \Exception('The postsListView config value is missing.');
@@ -72,7 +72,7 @@ class BlogPaginationBuilder
      *
      * @return void
      */
-    private function buildPage($pageIndex, $view, $posts)
+    protected function buildPage($pageIndex, $view, $posts)
     {
         $viewData = array_merge(
             $this->viewsData,
@@ -102,7 +102,7 @@ class BlogPaginationBuilder
      *
      * @return null|string
      */
-    private function getPreviousPageLink($currentPageIndex)
+    protected function getPreviousPageLink($currentPageIndex)
     {
         if (! isset($this->pagesData[$currentPageIndex - 1])) {
             return null;
@@ -122,7 +122,7 @@ class BlogPaginationBuilder
      *
      * @return null|string
      */
-    private function getNextPageLink($currentPageIndex)
+    protected function getNextPageLink($currentPageIndex)
     {
         if (! isset($this->pagesData[$currentPageIndex + 1])) {
             return null;
@@ -136,7 +136,7 @@ class BlogPaginationBuilder
      *
      * @return string
      */
-    private function getBlogListPagePath()
+    protected function getBlogListPagePath()
     {
         $path = str_replace('.', '/', $this->viewsData['postsListView']);
 

@@ -59,8 +59,8 @@ class BlogPostHandler extends BaseHandler
         // If the post is inside a child directory of the _blog directory then
         // we deal with it like regular site files and generate a nested
         // directories based post path with exact file name.
-        if (str_is('*/_blog/*/*', $pathName)) {
-            return str_replace('/_blog', '', parent::getDirectoryPrettyName());
+        if ($this->isInsideBlogDirectory($pathName)) {
+            return str_replace('/_blog/', '/', parent::getDirectoryPrettyName());
         }
 
         $fileBaseName = $this->getFileName();
@@ -71,13 +71,24 @@ class BlogPostHandler extends BaseHandler
     }
 
     /**
+     * Check if file is inside the blog directory.
+     *
+     * @param $pathName
+     * @return bool
+     */
+    protected function isInsideBlogDirectory($pathName)
+    {
+        return str_is('*/_blog/*/*', $pathName);
+    }
+
+    /**
      * Generate blog post slug.
      *
      * @param string $fileBaseName
      *
      * @return string
      */
-    private function getBlogPostSlug($fileBaseName)
+    protected function getBlogPostSlug($fileBaseName)
     {
         preg_match('/^(\d{4}-\d{2}-\d{2})-(.*)/', $fileBaseName, $matches);
 

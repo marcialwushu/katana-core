@@ -11,38 +11,38 @@ use Illuminate\Support\Str;
 
 class SiteBuilder
 {
-    private $filesystem;
-    private $viewFactory;
-    private $blogPostHandler;
-    private $fileHandler;
+    protected $filesystem;
+    protected $viewFactory;
+    protected $blogPostHandler;
+    protected $fileHandler;
 
     /**
      * The application environment.
      *
      * @var string
      */
-    private $environment;
+    protected $environment;
 
     /**
      * The site configurations.
      *
      * @var array
      */
-    private $configs;
+    protected $configs;
 
     /**
      * The data included in every view file of a post.
      *
      * @var array
      */
-    private $postsData;
+    protected $postsData;
 
     /**
      * The data to pass to every view.
      *
      * @var array
      */
-    private $viewsData;
+    protected $viewsData;
 
     /**
      * The directory that contains blade sub views.
@@ -94,19 +94,19 @@ class SiteBuilder
      */
     public function build()
     {
-        $files = $this->getSiteFiles();
+        $this->readConfigs();
 
-        $blogPostsFiles = array_filter($files, function ($file) {
-            return str_contains($file->getRelativePath(), '_blog');
-        });
+        $files = $this->getSiteFiles();
 
         $otherFiles = array_filter($files, function ($file) {
             return ! str_contains($file->getRelativePath(), '_blog');
         });
 
-        $this->readConfigs();
-
         if (@$this->configs['enableBlog']) {
+            $blogPostsFiles = array_filter($files, function ($file) {
+                return str_contains($file->getRelativePath(), '_blog');
+            });
+
             $this->readBlogPostsData($blogPostsFiles);
         }
 
@@ -148,7 +148,7 @@ class SiteBuilder
      *
      * @return void
      */
-    private function readConfigs()
+    protected function readConfigs()
     {
         $configs = include getcwd().'/config.php';
 
@@ -169,7 +169,7 @@ class SiteBuilder
      *
      * @return void
      */
-    private function handleSiteFiles($files)
+    protected function handleSiteFiles($files)
     {
         foreach ($files as $file) {
             $this->fileHandler->handle($file);
@@ -183,7 +183,7 @@ class SiteBuilder
      *
      * @return void
      */
-    private function handleBlogPostsFiles($files)
+    protected function handleBlogPostsFiles($files)
     {
         foreach ($files as $file) {
             $this->blogPostHandler->handle($file);
@@ -195,17 +195,38 @@ class SiteBuilder
      *
      * @return SplFileInfo[]
      */
-    private function getSiteFiles()
+    protected function getSiteFiles()
     {
         $files = array_filter($this->filesystem->allFiles(KATANA_CONTENT_DIR), function (SplFileInfo $file) {
-            return ! Str::startsWith($file->getRelativePathName(), $this->includesDirectory);
+            return $this->filterFile($file);
         });
 
+        $this->appendFiles($files);
+
+        return $files;
+    }
+
+    /**
+     * Filter un-needed files from.
+     *
+     * @param SplFileInfo $file
+     * @return bool
+     */
+    protected function filterFile(SplFileInfo $file)
+    {
+        return ! Str::startsWith($file->getRelativePathname(), $this->includesDirectory);
+    }
+
+    /**
+     * Append files to public.
+     *
+     * @param array $files
+     */
+    protected function appendFiles(array &$files)
+    {
         if ($this->filesystem->exists(KATANA_CONTENT_DIR.'/.htaccess')) {
             $files[] = new SplFileInfo(KATANA_CONTENT_DIR.'/.htaccess', '', '.htaccess');
         }
-
-        return $files;
     }
 
     /**
@@ -215,7 +236,7 @@ class SiteBuilder
      *
      * @return void
      */
-    private function readBlogPostsData($files)
+    protected function readBlogPostsData($files)
     {
         foreach ($files as $file) {
             $this->postsData[] = $this->blogPostHandler->getPostData($file);
@@ -227,7 +248,7 @@ class SiteBuilder
      *
      * @return void
      */
-    private function buildViewsData()
+    protected function buildViewsData()
     {
         $this->viewsData = $this->configs + ['blogPosts' => array_reverse((array) $this->postsData)];
 
@@ -241,7 +262,7 @@ class SiteBuilder
      *
      * @return void
      */
-    private function buildBlogPagination()
+    protected function buildBlogPagination()
     {
         $builder = new BlogPaginationBuilder(
             $this->filesystem,
@@ -257,7 +278,7 @@ class SiteBuilder
      *
      * @return void
      */
-    private function buildRSSFeed()
+    protected function buildRSSFeed()
     {
         $builder = new RSSFeedBuilder(
             $this->filesystem,

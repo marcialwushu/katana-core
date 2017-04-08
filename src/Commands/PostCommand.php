@@ -4,30 +4,31 @@ namespace Katana\Commands;
 
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Command\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Factory;
-use Katana\SiteBuilder;
+use Katana\PostBuilder;
 
-class BuildCommand extends Command
+class PostCommand extends Command
 {
     /**
      * The FileSystem instance.
      *
      * @var Filesystem
      */
-    protected $filesystem;
+    private $filesystem;
 
     /**
-     * The view factory instance.
+     * The FileSystem instance.
      *
      * @var Factory
      */
-    protected $viewFactory;
+    private $viewFactory;
 
     /**
-     * BuildCommand constructor.
+     * PostCommand constructor.
      *
      * @param Factory $viewFactory
      * @param Filesystem $filesystem
@@ -48,10 +49,10 @@ class BuildCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('build')
-            ->setDescription('Generate the site static files.')
-            ->addOption('env', null, InputOption::VALUE_REQUIRED, 'Application Environment.', 'default')
-            ->addOption('force', null, InputOption::VALUE_NONE, 'Clear the cache before building.');
+        $this->setName('post')
+            ->setDescription('Generate a blog post.')
+            ->addArgument('title', InputArgument::OPTIONAL, 'The Post Tilte', 'My New Post')
+            ->addOption('m', null, InputOption::VALUE_NONE, 'Create a Markdown template file');
     }
 
     /**
@@ -63,16 +64,18 @@ class BuildCommand extends Command
      * @return void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $siteBuilder = new SiteBuilder(
+    {	
+    	$post = new PostBuilder(
             $this->filesystem,
-            $this->viewFactory,
-            $input->getOption('env'),
-            $input->getOption('force')
+            $input->getArgument('title'),
+            $input->getOption('m')
         );
 
-        $siteBuilder->build();
+        $post->build();
 
-        $output->writeln("<info>Site was generated successfully.</info>");
+        $output->writeln(
+
+            sprintf("<info>Post \"%s\" was generated successfully.</info>", $input->getArgument('title'))
+        );
     }
 }

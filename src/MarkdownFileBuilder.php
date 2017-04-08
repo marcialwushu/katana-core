@@ -98,7 +98,7 @@ class MarkdownFileBuilder
      *
      * @return string
      */
-    private function buildBladeViewContent()
+    protected function buildBladeViewContent()
     {
         $sections = '';
 
@@ -119,7 +119,7 @@ class MarkdownFileBuilder
      *
      * @return BladeCompiler
      */
-    private function getBladeCompiler()
+    protected function getBladeCompiler()
     {
         return $this->viewFactory->getEngineResolver()->resolve('blade')->getCompiler();
     }
@@ -129,7 +129,7 @@ class MarkdownFileBuilder
      *
      * @return PhpEngine
      */
-    private function getEngine()
+    protected function getEngine()
     {
         return new PhpEngine;
     }
@@ -139,7 +139,7 @@ class MarkdownFileBuilder
      *
      * @return array
      */
-    private function getViewData()
+    protected function getViewData()
     {
         $data = array_merge($this->viewFactory->getShared(), $this->data);
 
@@ -157,7 +157,7 @@ class MarkdownFileBuilder
      *
      * @return bool
      */
-    private function isExpired()
+    protected function isExpired()
     {
         if (! $this->filesystem->exists($this->cached)) {
             return true;

@@ -7,7 +7,7 @@ use Illuminate\View\Factory;
 
 class Blade
 {
-    private $bladeCompiler;
+    protected $bladeCompiler;
 
     /**
      * Blade constructor.
@@ -38,7 +38,7 @@ class Blade
      *
      * @return void
      */
-    private function registerMarkdownDirective()
+    protected function registerMarkdownDirective()
     {
         $this->bladeCompiler->directive('markdown', function () {
             return "<?php echo \\Katana\\Markdown::parse(<<<'EOT'";
@@ -54,7 +54,7 @@ class Blade
      *
      * @return void
      */
-    private function registerURLDirective()
+    protected function registerURLDirective()
     {
         $this->bladeCompiler->directive('url', function ($expression) {
             $expression = substr($expression, 1, - 1);
