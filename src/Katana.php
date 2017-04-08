@@ -10,7 +10,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\FileViewFinder;
 use Illuminate\Events\Dispatcher;
 use Katana\Commands\BuildCommand;
-use Katana\Commands\PostCommand;
+use Katana\Commands\Post\PostCommand;
 use Illuminate\View\Factory;
 
 class Katana

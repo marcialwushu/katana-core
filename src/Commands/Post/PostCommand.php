@@ -1,28 +1,32 @@
 <?php
 
-namespace Katana\Commands;
+namespace Katana\Commands\Post;
 
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Command\Command;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Factory;
-use Katana\PostBuilder;
+use Illuminate\Filesystem\Filesystem;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Katana\Builders\Post\MarkdownOutput;
+use Katana\Builders\Post\PostBuilder;
+use Katana\Builders\Post\BladeOutput;
+
 
 class PostCommand extends Command
 {
     /**
-     * The FileSystem instance.
-     *
+     * @var PostCommandHelper
+     */
+    private $helper;
+
+    /**
      * @var Filesystem
      */
     private $filesystem;
 
     /**
-     * The FileSystem instance.
-     *
      * @var Factory
      */
     private $viewFactory;
@@ -36,13 +40,12 @@ class PostCommand extends Command
     public function __construct(Factory $viewFactory, Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
-
         $this->viewFactory = $viewFactory;
-
+        $this->helper = new PostCommandHelper();
         parent::__construct();
     }
 
-    /**
+    /**     
      * Configure the command.
      *
      * @return void
@@ -50,7 +53,7 @@ class PostCommand extends Command
     protected function configure()
     {
         $this->setName('post')
-            ->setDescription('Generate a blog post.')
+            ->setDescription('Generate a empty post template')
             ->addArgument('title', InputArgument::OPTIONAL, 'The Post Tilte', 'My New Post')
             ->addOption('m', null, InputOption::VALUE_NONE, 'Create a Markdown template file');
     }
@@ -60,22 +63,18 @@ class PostCommand extends Command
      *
      * @param InputInterface $input
      * @param OutputInterface $output
-     *
      * @return void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
-    {	
-    	$post = new PostBuilder(
-            $this->filesystem,
-            $input->getArgument('title'),
-            $input->getOption('m')
-        );
+    {   
+        $post   = new PostBuilder($input->getOption('m')? 
+                    new MarkdownOutput(): new BladeOutput());
 
-        $post->build();
-
-        $output->writeln(
-
-            sprintf("<info>Post \"%s\" was generated successfully.</info>", $input->getArgument('title'))
-        );
+        $title  = $input->getArgument('title');
+        $path   = $this->helper->validatePostPath($input, $output, $title);
+        
+        $post->build($path, $title);
+        $this->helper->successNotification($output, $path);
     }
+
 }
